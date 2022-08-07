@@ -8,18 +8,17 @@ from os.path import exists
 while exists('tmp.txt') == False:
     time.sleep(1)
 
-tmpFile = open('tmp.txt','r')
-inputPaths = tmpFile.read().split(',')
+tmp_file = open('tmp.txt','r')
+INPUT_PATHS = tmp_file.read().split(',')
 
-filePath = inputPaths[0]
-fileName = filePath.split('\\')
-objectName = fileName[len(fileName)-1].replace('.stl','')
+FILE_PATH = INPUT_PATHS[0]
+FILE_NAME = FILE_PATH.split('\\')
+OBJECT_NAME = FILE_NAME[len(FILE_NAME)-1].replace('.stl','')
+EXPORT_PATH = INPUT_PATHS[1]
+RENDERER = INPUT_PATHS[2]
 
 
-exportPath = inputPaths[1]
-
-
-obj = bpy.ops.import_mesh.stl(filepath=filePath)
+obj = bpy.ops.import_mesh.stl(filepath=FILE_PATH)
 
 mesh = bpy.context.object.data
 for f in mesh.polygons:
@@ -32,9 +31,9 @@ mesh.materials.append(mat)
 bpy.ops.object.modifier_add(type='EDGE_SPLIT')
 
 #Calculating bounding box
-xSpan = bpy.data.objects[objectName].dimensions.x
-ySpan = bpy.data.objects[objectName].dimensions.y
-zSpan = bpy.data.objects[objectName].dimensions.z
+xSpan = bpy.data.objects[OBJECT_NAME].dimensions.x
+ySpan = bpy.data.objects[OBJECT_NAME].dimensions.y
+zSpan = bpy.data.objects[OBJECT_NAME].dimensions.z
 
 bBoxDims = [xSpan,ySpan,zSpan]
 
@@ -85,7 +84,7 @@ bpy.ops.transform.resize(value=(scaleFactor,scaleFactor,scaleFactor),center_over
 
 scene = bpy.context.scene
 # scene.render.engine = 'BLENDER_WORKBENCH'
-scene.render.engine = 'CYCLES'
+scene.render.engine = RENDERER
 scene.render.image_settings.file_format='PNG'
-scene.render.filepath=exportPath
+scene.render.filepath=EXPORT_PATH
 bpy.ops.render.render(write_still=1)

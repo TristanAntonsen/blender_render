@@ -1,14 +1,25 @@
 import subprocess
 import os
 from os.path import exists
-import sys
 import argparse
 
 ## Blender setup
 EXE_PATH_BLENDER = r"C:/Program Files/Blender Foundation/Blender 3.1/blender.exe"  #location of blender on computer\
 
 ## Main function to call Blender & run _render_script.py with Blender
-def render_with_blender(_file_name,_output_image_name):
+def render_with_blender(_file_name, _output_image_name, settings):
+
+    ## creating settings
+    if settings['cycles']:
+        renderer = 'CYCLES'
+    elif settings['workbench']:
+        renderer = 'BLENDER_WORKBENCH'
+    elif settings['cycles'] and settings['workbench']:
+        renderer = 'CYCLES'
+    else:
+        renderer = 'BLENDER_WORKBENCH'
+    print(renderer)
+    print(settings['cycles'])
 
     if exists("tmp.txt"):
         os.remove("tmp.txt")
@@ -20,7 +31,7 @@ def render_with_blender(_file_name,_output_image_name):
     file_path = os.path.join(current_dir,_file_name)
     export_path = os.path.join(current_dir,_output_image_name)
 
-    inputList = [file_path,export_path]
+    inputList = [file_path,export_path,renderer]
 
     tmp_file.write(','.join(inputList)) # Filepath of stl to read
 
@@ -35,9 +46,16 @@ if __name__ == "__main__":
     parser.add_argument('file_name')
     parser.add_argument('-c', action='store_true')
     parser.add_argument('-w', action='store_true')
+
     args = parser.parse_args()
     file_name = args.file_name
     output_image = file_name.replace('.stl','.png')
-    render_with_blender(file_name,output_image)
+
+    render_settings = {
+        'cycles' : args.c,
+        'workbench' : args.w
+    }
+
+    render_with_blender(file_name,output_image,settings=render_settings)
 
     p = subprocess.Popen(["C:\\Users\\Tristan Antonsen\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", output_image]) ## open preview in VS code
