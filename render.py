@@ -18,8 +18,11 @@ def render_with_blender(_file_name, _output_image_name, settings):
         renderer = 'CYCLES'
     else:
         renderer = 'BLENDER_WORKBENCH'
-    print(renderer)
-    print(settings['cycles'])
+
+    if settings['side_view']:
+        view = 'side'
+    else:
+        view = 'front'
 
     if exists("tmp.txt"):
         os.remove("tmp.txt")
@@ -31,7 +34,7 @@ def render_with_blender(_file_name, _output_image_name, settings):
     file_path = os.path.join(current_dir,_file_name)
     export_path = os.path.join(current_dir,_output_image_name)
 
-    inputList = [file_path,export_path,renderer]
+    inputList = [file_path,export_path,renderer,view]
 
     tmp_file.write(','.join(inputList)) # Filepath of stl to read
 
@@ -46,16 +49,18 @@ if __name__ == "__main__":
     parser.add_argument('file_name')
     parser.add_argument('-c', action='store_true')
     parser.add_argument('-w', action='store_true')
+    parser.add_argument('-s', action='store_true')
 
     args = parser.parse_args()
     file_name = args.file_name
-    output_image = file_name.replace('.stl','.png')
+    output_image = file_name.replace('.stl','')
 
     render_settings = {
         'cycles' : args.c,
-        'workbench' : args.w
+        'workbench' : args.w,
+        'side_view' : args.s
     }
 
     render_with_blender(file_name,output_image,settings=render_settings)
 
-    p = subprocess.Popen(["C:\\Users\\Tristan Antonsen\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", output_image]) ## open preview in VS code
+    # p = subprocess.Popen(["C:\\Users\\Tristan Antonsen\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", output_image + ".png"]) ## open preview in VS code
