@@ -46,13 +46,14 @@ def render_with_blender(_file_name, _output_image_name, settings):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('file_name')
-    parser.add_argument('-c', action='store_true')
-    parser.add_argument('-w', action='store_true')
-    parser.add_argument('-s', action='store_true')
+    parser.add_argument('file_name') # file to render
+    parser.add_argument('-f', action='store_true') # argument is directory
+    parser.add_argument('-c', action='store_true') # cycles render engine
+    parser.add_argument('-w', action='store_true') # workbench render engine
+    parser.add_argument('-s', action='store_true') # side view
 
     args = parser.parse_args()
-    file_name = args.file_name
+    file_name = args.file_name.replace("/","\\")
     output_image = file_name.replace('.stl','')
 
     render_settings = {
@@ -61,6 +62,16 @@ if __name__ == "__main__":
         'side_view' : args.s
     }
 
-    render_with_blender(file_name,output_image,settings=render_settings)
+    if args.f:
+        dir = file_name
+        files = os.listdir(dir)
+        for file in files:
+            if '.png' in file:
+                continue
+            file_path = dir + '\\' + file
+            output_path = file_path.replace('.stl','')
+            render_with_blender(file_path,output_path,settings=render_settings)
+    else:
+        render_with_blender(file_name,output_image,settings=render_settings)
 
     # p = subprocess.Popen(["C:\\Users\\Tristan Antonsen\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", output_image + ".png"]) ## open preview in VS code
