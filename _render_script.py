@@ -19,6 +19,7 @@ OBJECT_NAME = FILE_NAME[len(FILE_NAME)-1].replace('.stl','')
 ## Render settings
 RENDERER = INPUT_PATHS[2]
 VIEW = INPUT_PATHS[3]
+COLOR = INPUT_PATHS[4]
 IMAGE_FORMAT = 'PNG'
 IMAGE_EXTENSION = '.png'
 
@@ -28,7 +29,11 @@ mesh = bpy.context.object.data
 for f in mesh.polygons:
     f.use_smooth = True
  
-mat = bpy.data.materials.get("material1")
+# mat = bpy.data.materials.get("material1")
+if COLOR == 'BLUE':
+    mat = bpy.data.materials.get("blue") #Workbench material
+else:
+    mat = bpy.data.materials.get("gray") #Workbench material
 mesh.materials.append(mat)
 
 #Adding edge split modifier for rendering with smooth shading
@@ -71,28 +76,48 @@ scale_factor =  cameraField / max(x_span,y_span,z_span)
 translationVector = [-1 * element for element in bBoxCentroid]
 
 
-##Front view
-bpy.ops.transform.translate(value=(translationVector[0],translationVector[1],translationVector[2]))
-bpy.ops.transform.resize(value=(scale_factor,scale_factor,scale_factor),center_override = (0,0,0))
-# bpy.context.active_object.rotation_euler[0] = math.radians(90)
+## Front view
+if VIEW == 'FRONT':
+    bpy.ops.transform.translate(value=(translationVector[0],translationVector[1],translationVector[2]))
+    bpy.ops.transform.resize(value=(scale_factor,scale_factor,scale_factor),center_override = (0,0,0))
 
-export_path = INPUT_PATHS[1] + '_front' + IMAGE_EXTENSION
+    export_path = INPUT_PATHS[1] + '_FRONT' + IMAGE_EXTENSION
+    export_path = export_path.replace('files','images')
 
-scene = bpy.context.scene
-scene.render.engine = RENDERER
-scene.render.image_settings.file_format=IMAGE_FORMAT
-scene.render.filepath=export_path
+    scene = bpy.context.scene
+    scene.render.engine = RENDERER
+    scene.render.image_settings.file_format=IMAGE_FORMAT
+    scene.render.filepath=export_path
 
-bpy.ops.render.render(write_still=1)
+    bpy.ops.render.render(write_still=1)
 
+## ISO view
+if VIEW == 'ISO':
+    bpy.ops.transform.translate(value=(translationVector[0],translationVector[1],translationVector[2]))
+    bpy.ops.transform.resize(value=(scale_factor,scale_factor,scale_factor),center_override = (0,0,0))
+    bpy.context.active_object.rotation_euler[0] = math.radians(45)
+    bpy.context.active_object.rotation_euler[1] = math.radians(45)
+    export_path = INPUT_PATHS[1] + '_ISO' + IMAGE_EXTENSION
+    export_path = export_path.replace('files','images')
 
-# ##Top view
-# bpy.ops.transform.rotate(value= -math.pi/2, orient_axis = 'X', center_override = (0,0,0))
+    scene = bpy.context.scene
+    scene.render.engine = RENDERER
+    scene.render.image_settings.file_format=IMAGE_FORMAT
+    scene.render.filepath=export_path
 
-# bpy.ops.render.render(write_still=1)
+    bpy.ops.render.render(write_still=1)
 
-# ###Side view
-# bpy.ops.transform.rotate(value= math.pi/2, orient_axis = 'X', center_override = (0,0,0))
-# bpy.ops.transform.rotate(value= math.pi/2, orient_axis = 'Z', center_override = (0,0,0))
+## Side view
+if VIEW == 'SIDE':
+    bpy.ops.transform.translate(value=(translationVector[0],translationVector[1],translationVector[2]))
+    bpy.ops.transform.resize(value=(scale_factor,scale_factor,scale_factor),center_override = (0,0,0))
+    bpy.context.active_object.rotation_euler[0] = math.radians(-90)
+    export_path = INPUT_PATHS[1] + '_SIDE' + IMAGE_EXTENSION
+    export_path = export_path.replace('files','images')
 
-# bpy.ops.render.render(write_still=1)
+    scene = bpy.context.scene
+    scene.render.engine = RENDERER
+    scene.render.image_settings.file_format=IMAGE_FORMAT
+    scene.render.filepath=export_path
+
+    bpy.ops.render.render(write_still=1)

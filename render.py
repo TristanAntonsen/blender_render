@@ -19,10 +19,7 @@ def render_with_blender(_file_name, _output_image_name, settings):
     else:
         renderer = 'BLENDER_WORKBENCH'
 
-    if settings['side_view']:
-        view = 'side'
-    else:
-        view = 'front'
+    view = settings['view']
 
     if exists("tmp.txt"):
         os.remove("tmp.txt")
@@ -34,7 +31,7 @@ def render_with_blender(_file_name, _output_image_name, settings):
     file_path = os.path.join(current_dir,_file_name)
     export_path = os.path.join(current_dir,_output_image_name)
 
-    inputList = [file_path,export_path,renderer,view]
+    inputList = [file_path,export_path,renderer,view,settings['color']]
 
     tmp_file.write(','.join(inputList)) # Filepath of stl to read
 
@@ -50,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', action='store_true') # argument is directory
     parser.add_argument('-c', action='store_true') # cycles render engine
     parser.add_argument('-w', action='store_true') # workbench render engine
-    parser.add_argument('-s', action='store_true') # side view
+    parser.add_argument('-iso', action='store_true') # side view
 
     args = parser.parse_args()
     file_name = args.file_name.replace("/","\\")
@@ -58,8 +55,7 @@ if __name__ == "__main__":
 
     render_settings = {
         'cycles' : args.c,
-        'workbench' : args.w,
-        'side_view' : args.s
+        'workbench' : args.w
     }
 
     if args.f:
@@ -70,7 +66,18 @@ if __name__ == "__main__":
                 continue
             file_path = dir + '\\' + file
             output_path = file_path.replace('.stl','')
-            render_with_blender(file_path,output_path,settings=render_settings)
+            if "_oriented" in file_path:
+                render_settings['view'] = 'FRONT'
+                render_settings['color'] = 'BLUE'
+                render_with_blender(file_path,output_path,settings=render_settings)
+            else:
+                render_settings['color'] = 'GRAY'
+                render_settings['view'] = 'ISO'
+                render_with_blender(file_path,output_path,settings=render_settings)
+                render_settings['view'] = 'SIDE'
+                render_with_blender(file_path,output_path,settings=render_settings)
+                render_settings['view'] = 'FRONT'
+                render_with_blender(file_path,output_path,settings=render_settings)
     else:
         render_with_blender(file_name,output_image,settings=render_settings)
 
