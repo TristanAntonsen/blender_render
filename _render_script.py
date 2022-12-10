@@ -13,7 +13,7 @@ tmp_file = open('tmp.txt','r')
 INPUT_PATHS = tmp_file.read().split(',')
 
 FILE_PATH = INPUT_PATHS[0]
-FILE_NAME = FILE_PATH.split('\\')
+FILE_NAME = FILE_PATH.split('/')
 OBJECT_NAME = FILE_NAME[len(FILE_NAME)-1].replace('.stl','')
 
 ## Render settings

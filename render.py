@@ -4,7 +4,7 @@ from os.path import exists
 import argparse
 
 ## Blender setup
-EXE_PATH_BLENDER = r"C:/Program Files/Blender Foundation/Blender 3.1/blender.exe"  #location of blender on computer\
+EXE_PATH_BLENDER = r"/Applications/Blender.app/Contents/MacOS/Blender"  #location of blender on computer\
 
 ## Main function to call Blender & run _render_script.py with Blender
 def render_with_blender(_file_name, _output_image_name, settings):
@@ -40,7 +40,7 @@ def render_with_blender(_file_name, _output_image_name, settings):
 
     if exists("tmp.txt"):
         tmp_file = open('tmp.txt','r')
-        subprocess.call([EXE_PATH_BLENDER,'render.blend','--background','--python','_render_script.py'])
+        subprocess.run([EXE_PATH_BLENDER, '-b', 'render.blend','--python','_render_script.py'])
 
 
 if __name__ == "__main__":
@@ -73,5 +73,3 @@ if __name__ == "__main__":
             render_with_blender(file_path,output_path,settings=render_settings)
     else:
         render_with_blender(file_name,output_image,settings=render_settings)
-
-    # p = subprocess.Popen(["C:\\Users\\Tristan Antonsen\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", output_image + ".png"]) ## open preview in VS code
